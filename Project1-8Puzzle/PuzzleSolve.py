@@ -1,6 +1,6 @@
 import numpy as np 
 import time
-# import os
+import os
 # import collections 
 # # https://thispointer.com/find-the-index-of-a-value-in-numpy-array/
 # def blank_tile_location(node):
@@ -10,9 +10,9 @@ import time
 # 		print(loc)
 
 class NodeInfo:
-	def __init__(self, cost, child_node, parent_node):
+	def __init__(self, cost, index, child_node, parent_node):
 		self.cost = cost
-		# self.index = index
+		self.index = index
 		self.parent_node = parent_node
 		self.child_node = child_node
 
@@ -91,16 +91,18 @@ def make_path(node):
 		path.append(parent_node)
 		parent_node = parent_node.parent_node
 	count = 0
-	for item in range(len(path)):
-		# print(path[item].parent_node)
-		count += 1
-
+	# for item in range(len(path)):
+	# 	# print(path[item].parent_node)
+	# 	count += 1
+	path_list = []
 	for item in path:
-		print(item.child_node)
-	final = list((path)).pop(0)
+		# print(item.child_node)
+		count += 1
+		path_list.append(item.child_node)
+	# final = list((path)).pop(0)
 	# print(final.child_node)
-	print(count)
-	return list(reversed(path))
+	print("Optimal path states are " + str(count))
+	return list(reversed(path_list))
 
 def bfs_search(node):
 	parent_nodes = []
@@ -108,7 +110,7 @@ def bfs_search(node):
 	# print(node)
 	# print(type(parent_nodes))
 	goal_node = np.array([1, 2, 3, 4, 5, 6, 7, 8, 0]) # np.array([1, 2, 3, 4, 5, 6, 7, 8, 0])
-	path_nodes = []
+	relative_nodes = []
 	explored_nodes = [] #set() # []
 	# child_nodes = np.asarray([])
 	action_set = ["U", "D", "L", "R"]
@@ -119,22 +121,22 @@ def bfs_search(node):
 	# print(parent_nodes)
 	while parent_nodes:
 		# print(parent_nodes[0])
-		explorer = parent_nodes.pop(0)
+		sol_nodes = parent_nodes.pop(0)
 		# print("1")
 		# print(explorer.child_node)
-		if explorer.child_node.tolist() == goal_node.tolist():
+		if sol_nodes.child_node.tolist() == goal_node.tolist():
 			# np.array_equal(explorer.child_node.tolist(), goal_node.tolist()):
-			print("Goal Reached")
-			return explorer, path_nodes, explored_nodes
+			print("Goal Reached!")
+			return sol_nodes, relative_nodes, explored_nodes # explorer, path_nodes, explored_nodes
 
 		for action in action_set:
 			# print("2")
 			# print(action)
-			explorer_temp_node, cost = actions_move(action, explorer.child_node)
-			if any(explorer_temp_node != None) and (explorer_temp_node.tolist() != explorer.child_node.tolist()):
+			explorer_temp_node, cost = actions_move(action, sol_nodes.child_node)
+			if any(explorer_temp_node != None) and (explorer_temp_node.tolist() != sol_nodes.child_node.tolist()):
 				# print("3")
 				node_count += 1
-				child_nodes = NodeInfo(cost, np.array(explorer_temp_node), explorer)
+				child_nodes = NodeInfo(cost, node_count, np.array(explorer_temp_node), sol_nodes)
 				# print(child_nodes.child_node)
 				if not (child_nodes.child_node.tolist() in explored_nodes): # (not str(child_nodes.child_node) in explored_nodes): # all(item in child_nodes.child_node for item in explored_nodes): 
 				# np.any(np.array_equal(x, child_nodes.child_node) for x in path_nodes): 
@@ -152,20 +154,50 @@ def bfs_search(node):
 					# array append needs to be rectified
 					# path_nodes = path_nodes.astype(np.int16)
 					# print(path_nodes)
-					path_nodes.append(child_nodes)
+					relative_nodes.append(child_nodes)
 					# explored_nodes = np.append(explored_nodes, child_nodes)
 					# print(node_count)
 					# explored_nodes = np.append(explored_nodes, child_nodes)
 					# print(explored_nodes)
 					if child_nodes.child_node.tolist() == goal_node.tolist(): # np.array_equal(child_nodes.child_node.tolist(), goal_node.tolist()):
-						print("Goal Reached")
-						print(len(explored_nodes)-1)
-						return child_nodes, path_nodes, explored_nodes
+						print("Goal Reached!")
+						print("Total Moves are " + str(len(explored_nodes)-1))
+						return child_nodes, relative_nodes, explored_nodes # child_nodes, path_nodes, explored_nodes
 
-	return None, None, None
+	return None, None
+
+def complete_path_file(path_nodes):
+	if os.path.exists("nodePath.txt"):
+		os.remove("nodePath.txt")
+
+	file = open("nodePath.txt", "a")
+
+	for nodes in path_nodes:
+		file.write(str(nodes[0]) + " " + str(nodes[3]) + " " + str(nodes[6]) + " " + str(nodes[1]) + " " + str(nodes[4]) + " " + str(nodes[7]) + " " + str(nodes[2]) + " " + str(nodes[5]) + " " + str(nodes[8]) + "\n")
+	file.close()
+
+def complete_node_file(explored):
+	if os.path.exists("Nodes.txt"):
+			os.remove("Nodes.txt")
+
+	file = open("Nodes.txt", "a")
+	# print("Total states reached: " + str(len(explored)))
+	for nodes in explored:
+		file.write(str(nodes[0]) + " " + str(nodes[1]) + " " + str(nodes[2]) + " " + str(nodes[3]) + " " + str(nodes[4]) + " " + str(nodes[5]) + " " + str(nodes[6]) + " " + str(nodes[7]) + " " + str(nodes[8]) + "\n")
+	file.close()
+
+def complete_node_info_file(relatives):
+	if os.path.exists("NodesInfo.txt"):
+			os.remove("NodesInfo.txt")
+
+	file = open("NodesInfo.txt", "a")
+	# print("Total states reached: " + str(len(explored)))
+	for nodes in relatives:
+		if nodes.parent_node != None:
+			file.write(str(nodes.index) + "\t" + str(nodes.parent_node.index) + "\t" + str(nodes.cost) + "\n")
+	file.close()
 
 
-	
 	# new_node_left = np.copy(action_move_left(node))
 	# new_node_right = np.copy(action_move_right(node))
 	# new_node_up = np.copy(action_move_up(node))
@@ -267,8 +299,8 @@ def main():
 	# 6, 3, 8, 0, 4, 1, 2, 5, 7
 	# 3, 0, 8, 6, 4, 1, 2, 5, 7
 	# 6, 3, 8, 2, 4, 1, 0, 5, 7 infinite loop
-	
-	original_parent_node = np.array([6, 4, 7, 8, 5, 0, 3, 2, 1])
+	# 6, 4, 7, 8, 5, 0, 3, 2, 1 Hardest
+	original_parent_node = np.array([1, 0, 3, 4, 2, 5, 7, 8, 6])
 
 	# # Hardest Case 
 	# original_parent_node = np.array([8, 6, 7, 2, 5, 4, 3, 0, 1])
@@ -288,10 +320,14 @@ def main():
 	else:
 		print("This case is Solvable!")
 		# get_location(original_parent_node)
-		input_node = NodeInfo(0, original_parent_node, None)
+		print("The starting parent node is: " + str(original_parent_node))
+		input_node = NodeInfo(0, 0, original_parent_node, None)
 
-		goal_states, path, explored = bfs_search(input_node)
-		make_path(goal_states)
+		goal_states, relatives, explored= bfs_search(input_node)
+		path_nodes = make_path(goal_states)
+		complete_path_file(path_nodes)
+		complete_node_file(explored)
+		complete_node_info_file(relatives)
 		toc = time.time()
-		print("Time Required is: " + str(toc-tic))
+		print("Time Required is: " + str((toc-tic)/60) + " mins")
 main()
