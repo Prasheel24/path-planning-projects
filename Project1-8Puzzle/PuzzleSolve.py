@@ -138,6 +138,7 @@ def bfs_search(node):
 				node_count += 1
 				child_nodes = NodeInfo(cost, node_count, np.array(explorer_temp_node), sol_nodes)
 				# print(child_nodes.child_node)
+				relative_nodes.append(child_nodes)
 				if not (child_nodes.child_node.tolist() in explored_nodes): # (not str(child_nodes.child_node) in explored_nodes): # all(item in child_nodes.child_node for item in explored_nodes): 
 				# np.any(np.array_equal(x, child_nodes.child_node) for x in path_nodes): 
 				# child_nodes.child_node not in path_nodes:
@@ -154,7 +155,7 @@ def bfs_search(node):
 					# array append needs to be rectified
 					# path_nodes = path_nodes.astype(np.int16)
 					# print(path_nodes)
-					relative_nodes.append(child_nodes)
+					
 					# explored_nodes = np.append(explored_nodes, child_nodes)
 					# print(node_count)
 					# explored_nodes = np.append(explored_nodes, child_nodes)
@@ -193,8 +194,10 @@ def complete_node_info_file(relatives):
 	file = open("NodesInfo.txt", "a")
 	# print("Total states reached: " + str(len(explored)))
 	for nodes in relatives:
-		if nodes.parent_node != None:
-			file.write(str(nodes.index) + "\t" + str(nodes.parent_node.index) + "\t" + str(nodes.cost) + "\n")
+		if nodes.parent_node != None and nodes.parent_node.index == 0:
+			file.write(str(nodes.index) + " " + str(1) + " " + str(nodes.cost) + "\n")
+		else:
+			file.write(str(nodes.index) + " " + str(nodes.parent_node.index + 1) + " " + str(nodes.cost) + "\n")
 	file.close()
 
 
@@ -278,16 +281,17 @@ def complete_node_info_file(relatives):
 def main():
 	tic = time.time()
 	original_parent_node = []
-	# # Uncomment this for final run.
+	# Uncomment this for final run.
 	# rows = int(input("Enter the number of rows:")) 
 	# cols = int(input("Enter the number of columns:")) 
-	# print("Enter the entries in a single line (separated by enter/return key): ")
+	print("Enter the entries in a single line (separated by spaces in a row): ")
 
 	# n = rows * cols
 	# for i in range(0, n):
 	# 	element = int(input())
 	# 	original_parent_node.append(element)
-	# np.asarray(original_parent_node)
+	original_parent_node = [int(x) for x in input().split()]
+	original_parent_node = np.array(original_parent_node)
 
 	# # Comment this for final run.
 	# 1, 2, 3, 5, 6, 8, 0, 4, 7 300
@@ -300,7 +304,8 @@ def main():
 	# 3, 0, 8, 6, 4, 1, 2, 5, 7
 	# 6, 3, 8, 2, 4, 1, 0, 5, 7 infinite loop
 	# 6, 4, 7, 8, 5, 0, 3, 2, 1 Hardest
-	original_parent_node = np.array([1, 0, 3, 4, 2, 5, 7, 8, 6])
+	# 1, 0, 3, 4, 2, 5, 7, 8, 6
+	# original_parent_node = np.array([1, 0, 3, 4, 2, 5, 7, 8, 6])
 
 	# # Hardest Case 
 	# original_parent_node = np.array([8, 6, 7, 2, 5, 4, 3, 0, 1])
@@ -329,5 +334,11 @@ def main():
 		complete_node_file(explored)
 		complete_node_info_file(relatives)
 		toc = time.time()
-		print("Time Required is: " + str((toc-tic)/60) + " mins")
+		print("Time to compute is " + str((toc-tic)/60) + " mins")
 main()
+
+# https://medium.com/fintechexplained/time-complexities-of-python-data-structures-ddb7503790ef
+# http://w01fe.com/blog/2009/01/the-hardest-eight-puzzle-instances-take-31-moves-to-solve/
+# https://gist.github.com/sanchitgangwar/2158089
+# https://stackoverflow.com/questions/18864859/python-executing-multiple-functions-simultaneously
+# https://stackoverflow.com/questions/47518944/open-new-gnome-terminal-and-run-command
