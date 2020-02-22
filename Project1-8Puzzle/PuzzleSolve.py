@@ -352,27 +352,11 @@ def main():
 	original_parent_node = []
 
 	# Uncomment this for final run.
-	# print("Enter the entries in a single line (separated by spaces in a row): ")
-	# original_parent_node = [int(x) for x in input().split()]
-	# original_parent_node = np.array(original_parent_node)
+	print("Enter the entries in a single line (separated by spaces in a row): ")
+	original_parent_node = [int(x) for x in input().split()]
+	original_parent_node = np.array(original_parent_node)
 
-	# 1, 2, 3, 5, 6, 8, 0, 4, 7 
-	# 1, 2, 3, 5, 6, 0, 4, 7, 8 
-	# 0, 1, 3, 6, 2, 8, 5, 4, 7
-	# 6, 3, 0, 2, 1, 8, 5, 4, 7
-	# 6, 3, 8, 2, 4, 1, 5, 0, 7
-	# 6, 3, 8, 2, 4, 1, 0, 5, 7
-	# 6, 3, 8, 0, 4, 1, 2, 5, 7
-	# 3, 0, 8, 6, 4, 1, 2, 5, 7
-	# 6, 3, 8, 2, 4, 1, 0, 5, 7
-	# 6, 4, 7, 8, 5, 0, 3, 2, 1 Hardest
-	# 8, 6, 7, 2, 5, 4, 3, 0, 1 Hardest
-
-	# # Comment these for final run.
-	# # Hardest Case 
-	original_parent_node = np.array([8, 6, 7, 2, 5, 4, 3, 0, 1])
-	# original_parent_node = np.array([6, 4, 7, 8, 5, 0, 3, 2, 1])
-
+	# # Comment these for final run
 	# # Unsolvable case	
 	# original_parent_node = np.array([8, 1, 2, 0, 4, 3, 7, 6, 5])
 	
@@ -384,7 +368,7 @@ def main():
 		print("This case is Unsolvable!")
 		print("Please Try again")
 		# # Uncomment this for final run.
-		# main()
+		main()
 	else:
 		print("This case is Solvable!")
 		print("The starting parent node is: " + str(original_parent_node))
