@@ -6,9 +6,12 @@ import matplotlib.pyplot as plt
 
 
 def take_input():
-    print("Enter a start node co-ordinates x,y (e.g 5 4)")
+    print("Enter Start followed by Goal co-ordinates x,y (e.g 5 4 230 270) where 5,4 are start points and 230,270 are goal points")
     C= [int(i) for i in input().split()]
-    return C
+    if (C[0]==C[2] and C[1]==C[3]) return print("Start point and Goal Point are same, Run Again to Restart")
+    elif check_if_valid(C[0],C[1],C[2],C[3]) ==1 return print("Start point lies inside an Obstacle, Run Again to Restart")
+    elif check_if_valid(C[2],C[3],C[0],C[1]) == 1 return print("Goal point lies inside an Obstacle, Run Again to Restart")
+    else return S,G
 
 def draw_map():
     fig1, ax = plt.subplots()
@@ -78,19 +81,25 @@ def down_right(x,y):
     y=y-1
     return x,y
 
-def check_if_inlier(x,y):
+def check_if_valid(x,y,300,200):
     if cv2.pointPolygonTest(np.float32([[30.05,76.16],[100,38.66],[95,30],[25.05,67.5]]),(x,y),False)>-1: return 1
     if ((x-150)/40)**2+((y-100)/20)**2<=1: return 1
     if cv2.pointPolygonTest(np.float32([[25,185],[75,185],[100,150],[75,120],[50,150],[20,120]]),(x,y),False)>-1: return 1
     if cv2.pointPolygonTest(np.float32([[225,40],[250,25],[225,10],[200,25]]),(x,y),False)>-1: return 1 
-    if (x-225)**2+(y-150)**2<=25: return 1 
+    if (x-225)**2+(y-150)**2<=25: return 1
+    if x==300 and y==200 return 2
     return 0
     
 
 def dijkstra(N):
     Parent=[]
+    child=[]
+    Robot_Radius=2
+    
+    Clearance=2
+    return path
 
-def find path(path):
+def find_path(path):
     
     
 
