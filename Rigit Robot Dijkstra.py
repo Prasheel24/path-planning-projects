@@ -1,17 +1,24 @@
 import numpy as np
-import cv2 as cv2
+import math
 import matplotlib.patches as mpatches
 from matplotlib.collections import PatchCollection
 import matplotlib.pyplot as plt
+from collections import deque
+from matplotlib.animation import FuncAnimation
+from matplotlib import style
 
 
 def take_input():
+    print("Enter the Robot's Radius and Clearance (e.g 2 3) where 2 is Robot radius and 3 is clearance")
+    R= [int(i) for i in input().split()]
     print("Enter Start followed by Goal co-ordinates x,y (e.g 5 4 230 270) where 5,4 are start points and 230,270 are goal points")
     C= [int(i) for i in input().split()]
-    if (C[0]==C[2] and C[1]==C[3]) return print("Start point and Goal Point are same, Run Again to Restart")
-    elif check_if_valid(C[0],C[1],C[2],C[3]) ==1 return print("Start point lies inside an Obstacle, Run Again to Restart")
-    elif check_if_valid(C[2],C[3],C[0],C[1]) == 1 return print("Goal point lies inside an Obstacle, Run Again to Restart")
-    else return S,G
+    if (C[0]==C[2] and C[1]==C[3]): return print("Start point and Goal Point are same, Run Again to Restart")
+    if not (C[0]>=0 and C[1]>=0 and C[0]<300 and C[1]<200): return print("Start point is out of bounds, Run Again to Restart")
+    if not (C[2]>=0 and C[3]>=0 and C[2]<300 and C[3]<200): return print("Goal point is out of bounds, Run Again to Restart")
+    elif check_if_valid(C[0],C[1],C[2],C[3],R[1]) ==1: return print("Start point lies inside an Obstacle, Run Again to Restart")
+    elif check_if_valid(C[2],C[3],C[0],C[1],R[1]) == 1: return print("Goal point lies inside an Obstacle, Run Again to Restart")
+    return C[0],C[1],C[2],C[3],R[0],R[1]
 
 def draw_map():
     fig1, ax = plt.subplots()
@@ -31,6 +38,7 @@ def draw_map():
     ax.add_collection(p)
     plt.axis([0, 300, 0, 200])
     fig1.show()
+    return fig1
 
 def draw_trial_map():
     fig2, ax2 = plt.subplots()
@@ -46,65 +54,46 @@ def draw_trial_map():
     fig2.show()
 
 def up(x,y):
-    y=y-1
-    return x,y
+    if y<199:
+        y=y+1
+    return(x,y)
  
 def down(x,y):
-    y=y+1
-    return x,y
+    if y>0:
+        y=y-1
+    return(x,y)
  
 def left(x,y):
-    x=x-1
-    return x,y
+    if x>0:
+        x=x-1
+    return(x,y)
   
 def right(x,y):
-    x=x+1
-    return x,y
+    if x<299:
+        x=x+1
+    return(x,y)
   
 def up_left(x,y):
-    x=x-1
-    y=y-1
-    return x,y
+    if y<199 and x>0:
+        x=x-1
+        y=y+1
+    return(x,y)
   
 def up_right(x,y):
-    x=x+1
-    y=y-1
-    return x,y
+    if y<199 and x<299:
+        x=x+1
+        y=y+1
+    return (x,y)
 
 def down_left(x,y):
-    x=x-1
-    y=y-1
-    return x,y
+    if y>0 and x>0:
+        x=x-1
+        y=y-1
+    return(x,y)
 
 def down_right(x,y):
-    x=x+1
-    y=y-1
-    return x,y
+    if y>0 and x<299:
+        x=x+1
+        y=y-1
+    return(x,y)
 
-def check_if_valid(x,y,300,200):
-    if cv2.pointPolygonTest(np.float32([[30.05,76.16],[100,38.66],[95,30],[25.05,67.5]]),(x,y),False)>-1: return 1
-    if ((x-150)/40)**2+((y-100)/20)**2<=1: return 1
-    if cv2.pointPolygonTest(np.float32([[25,185],[75,185],[100,150],[75,120],[50,150],[20,120]]),(x,y),False)>-1: return 1
-    if cv2.pointPolygonTest(np.float32([[225,40],[250,25],[225,10],[200,25]]),(x,y),False)>-1: return 1 
-    if (x-225)**2+(y-150)**2<=25: return 1
-    if x==300 and y==200 return 2
-    return 0
-    
-
-def dijkstra(N):
-    Parent=[]
-    child=[]
-    Robot_Radius=2
-    
-    Clearance=2
-    return path
-
-def find_path(path):
-    
-    
-
-    
-draw_map()
-draw_trial_map()
-p=check_if_inlier(225,13)
-print(p)
