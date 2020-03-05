@@ -1,181 +1,37 @@
 import numpy as np
-import math
-import matplotlib.patches as mpatches
-from matplotlib.collections import PatchCollection
-import matplotlib.pyplot as plt
-from collections import deque
-from matplotlib.animation import FuncAnimation
-from matplotlib import style
-
-
-def take_input():
-    print("Enter the Robot's Radius and Clearance (e.g 2 3) where 2 is Robot radius and 3 is clearance")
-    R= [int(i) for i in input().split()]
-    print("Enter Start followed by Goal co-ordinates x,y (e.g 5 4 230 270) where 5,4 are start points and 230,270 are goal points")
-    C= [int(i) for i in input().split()]
-    if (C[0]==C[2] and C[1]==C[3]): return print("Start point and Goal Point are same, Run Again to Restart")
-    if not (C[0]>=0 and C[1]>=0 and C[0]<300 and C[1]<200): return print("Start point is out of bounds, Run Again to Restart")
-    if not (C[2]>=0 and C[3]>=0 and C[2]<300 and C[3]<200): return print("Goal point is out of bounds, Run Again to Restart")
-    elif check_if_valid(C[0],C[1],C[2],C[3],R[1]) ==1: return print("Start point lies inside an Obstacle, Run Again to Restart")
-    elif check_if_valid(C[2],C[3],C[0],C[1],R[1]) == 1: return print("Goal point lies inside an Obstacle, Run Again to Restart")
-    return C[0],C[1],C[2],C[3],R[0],R[1]
-
-def draw_map():
-    fig1, ax = plt.subplots()
-    patches = []
-    obstacle1 = mpatches.Polygon([[25,185],[75,185],[100,150],[75,120],[50,150],[20,120]], True)
-    obstacle2 = mpatches.Polygon([[225,40],[250,25],[225,10],[200,25]], True)
-    obstacle3 = mpatches.Polygon([[30.05,76.16],[100,38.66],[95,30],[25.05,67.5]], True)
-    obstacle4 = mpatches.Circle((225, 150), 25)
-    obstacle5= mpatches.Ellipse((150,100),80,40)
-    patches.append(obstacle1)
-    patches.append(obstacle2)
-    patches.append(obstacle3)
-    patches.append(obstacle4)
-    patches.append(obstacle5)
-    p = PatchCollection(patches, alpha=0.4)
-    p.set_array(np.array([0,0,0,0,0]))
-    ax.add_collection(p)
-    plt.axis([0, 300, 0, 200])
-    fig1.show()
-    return fig1
-
-def draw_trial_map():
-    fig2, ax2 = plt.subplots()
-    patches = []
-    obstacle1 = mpatches.Polygon([[90,60],[110,60],[110,40],[90,40]], True)
-    obstacle2 = mpatches.Circle((160, 50), 15)
-    patches.append(obstacle1)
-    patches.append(obstacle2)
-    p = PatchCollection(patches, alpha=0.4)
-    p.set_array(np.array([0,0]))
-    ax2.add_collection(p)
-    plt.axis([0, 200, 0, 100])
-    fig2.show()
 
 def up(x,y):
-    if y<199:
-        y=y+1
-    return(x,y)
+    y=y-1
+    return x,y
  
 def down(x,y):
-    if y>0:
-        y=y-1
-    return(x,y)
+    y=y+1
+    return x,y
  
 def left(x,y):
-    if x>0:
-        x=x-1
-    return(x,y)
+    x=x-1
+    return x,y
   
 def right(x,y):
-    if x<299:
-        x=x+1
-    return(x,y)
+    x=x+1
+    return x,y
   
 def up_left(x,y):
-    if y<199 and x>0:
-        x=x-1
-        y=y+1
-    return(x,y)
+    x=x-1
+    y=y-1
+    return x,y
   
 def up_right(x,y):
-    if y<199 and x<299:
-        x=x+1
-        y=y+1
-    return (x,y)
+    x=x+1
+    y=y-1
+    return x,y
 
 def down_left(x,y):
-    if y>0 and x>0:
-        x=x-1
-        y=y-1
-    return(x,y)
+    x=x-1
+    y=y-1
+    return x,y
 
 def down_right(x,y):
-    if y>0 and x<299:
-        x=x+1
-        y=y-1
-    return(x,y)
-
-def create_node(x,y,nodes,neighbours,previous_node,visited_nodes):
-    A=up(x,y)
-    B=right(x,y)
-    C=down(x,y)
-    D=left(x,y)
-    E=up_left(x,y)
-    F=up_right(x,y)
-    G=down_right(x,y)
-    H=down_left(x,y)
-    #print(nodes)
-    cost=nodes[x,y]
-    if A!=(x,y) and A not in visited_nodes.values() and A not in neighbours:
-        neighbours.append((A[0],A[1]))
-        if nodes[A[0],A[1]]>cost+1:
-            nodes[A[0],A[1]]=cost+1
-            previous_node[A[0],A[1]]=(x,y)
-        
-    if B!=(x,y) and B not in visited_nodes.values() and B not in neighbours:
-        neighbours.append((B[0],B[1]))  
-        if nodes[B[0],B[1]]>cost+1:
-            nodes[B[0],B[1]]=cost+1
-            previous_node[B[0],B[1]]=(x,y)
-        
-    if C!=(x,y) and C not in visited_nodes.values() and C not in neighbours:
-        neighbours.append((C[0],C[1]))
-        if nodes[C[0],C[1]]>cost+1:
-            nodes[C[0],C[1]]=cost+1
-            previous_node[C[0],C[1]]=(x,y)
-        
-        
-    if D!=(x,y) and D not in visited_nodes.values() and D not in neighbours:
-        neighbours.append((D[0],D[1]))
-        if nodes[D[0],D[1]]>cost+1:
-            nodes[D[0],D[1]]=cost+1
-            previous_node[D[0],D[1]]=(x,y)
-        
-    if E!=(x,y) and E not in visited_nodes.values() and E not in neighbours:
-        neighbours.append((E[0],E[1]))
-        if nodes[E[0],E[1]]>cost+math.sqrt(2):
-            nodes[E[0],E[1]]=cost+math.sqrt(2)
-            previous_node[E[0],E[1]]=(x,y)
-
-    if F!=(x,y) and F not in visited_nodes.values() and F not in neighbours:
-        neighbours.append((F[0],F[1]))
-        if nodes[F[0],F[1]]>cost+math.sqrt(2):
-            nodes[F[0],F[1]]=cost+math.sqrt(2)
-            previous_node[F[0],F[1]]=(x,y)
-         
-    if G!=(x,y) and G not in visited_nodes.values() and G not in neighbours:
-        neighbours.append((G[0],G[1]))
-        if nodes[G[0],G[1]]>cost+math.sqrt(2):
-            nodes[G[0],G[1]]=cost+math.sqrt(2)
-            previous_node[G[0],G[1]]=(x,y)
-        
-    if H!=(x,y) and H not in visited_nodes.values() and H not in neighbours:
-        neighbours.append((H[0],H[1]))
-        if nodes[H[0],H[1]]>cost+math.sqrt(2):
-            nodes[H[0],H[1]]=cost+math.sqrt(2)
-            previous_node[H[0],H[1]]=(x,y)
-    return neighbours,nodes
-
-    
-    
-
-def dijkstra(xs,ys,xg,yg,Robot_Radius,Clearance_edge):
-    # Robot Parameters
-    clearance_center=Robot_Radius+Clearance_edge
-
-    # Map
-    draw_map()
-
-    # Dijkstra Parameters
-    nodes ={}
-    for i in range(300):
-        for j in range(200):
-            nodes[i,j]=math.inf
-    nodes[xs,ys]=0
-    visited_nodes={}
-    neighbours=deque([(xs,ys)])
-    previous_node={}
-    n=1
-
+    x=x+1
+    y=y-1
+    return x,y
