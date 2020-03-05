@@ -97,3 +97,24 @@ def down_right(x,y):
         y=y-1
     return(x,y)
 
+
+def dijkstra(xs,ys,xg,yg,Robot_Radius,Clearance_edge):
+    # Robot Parameters
+    clearance_center=Robot_Radius+Clearance_edge
+
+    # Map
+    draw_map()
+
+    # Dijkstra Parameters
+    nodes ={}
+    for i in range(300):
+        for j in range(200):
+            nodes[i,j]=math.inf
+    nodes[xs,ys]=0
+    visited_nodes={}
+    neighbours=deque([(xs,ys)])
+    previous_node={}
+    n=1
+
+
+
