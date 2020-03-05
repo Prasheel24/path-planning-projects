@@ -97,6 +97,69 @@ def down_right(x,y):
         y=y-1
     return(x,y)
 
+def create_node(x,y,nodes,neighbours,previous_node,visited_nodes):
+    A=up(x,y)
+    B=right(x,y)
+    C=down(x,y)
+    D=left(x,y)
+    E=up_left(x,y)
+    F=up_right(x,y)
+    G=down_right(x,y)
+    H=down_left(x,y)
+    #print(nodes)
+    cost=nodes[x,y]
+    if A!=(x,y) and A not in visited_nodes.values() and A not in neighbours:
+        neighbours.append((A[0],A[1]))
+        if nodes[A[0],A[1]]>cost+1:
+            nodes[A[0],A[1]]=cost+1
+            previous_node[A[0],A[1]]=(x,y)
+        
+    if B!=(x,y) and B not in visited_nodes.values() and B not in neighbours:
+        neighbours.append((B[0],B[1]))  
+        if nodes[B[0],B[1]]>cost+1:
+            nodes[B[0],B[1]]=cost+1
+            previous_node[B[0],B[1]]=(x,y)
+        
+    if C!=(x,y) and C not in visited_nodes.values() and C not in neighbours:
+        neighbours.append((C[0],C[1]))
+        if nodes[C[0],C[1]]>cost+1:
+            nodes[C[0],C[1]]=cost+1
+            previous_node[C[0],C[1]]=(x,y)
+        
+        
+    if D!=(x,y) and D not in visited_nodes.values() and D not in neighbours:
+        neighbours.append((D[0],D[1]))
+        if nodes[D[0],D[1]]>cost+1:
+            nodes[D[0],D[1]]=cost+1
+            previous_node[D[0],D[1]]=(x,y)
+        
+    if E!=(x,y) and E not in visited_nodes.values() and E not in neighbours:
+        neighbours.append((E[0],E[1]))
+        if nodes[E[0],E[1]]>cost+math.sqrt(2):
+            nodes[E[0],E[1]]=cost+math.sqrt(2)
+            previous_node[E[0],E[1]]=(x,y)
+
+    if F!=(x,y) and F not in visited_nodes.values() and F not in neighbours:
+        neighbours.append((F[0],F[1]))
+        if nodes[F[0],F[1]]>cost+math.sqrt(2):
+            nodes[F[0],F[1]]=cost+math.sqrt(2)
+            previous_node[F[0],F[1]]=(x,y)
+         
+    if G!=(x,y) and G not in visited_nodes.values() and G not in neighbours:
+        neighbours.append((G[0],G[1]))
+        if nodes[G[0],G[1]]>cost+math.sqrt(2):
+            nodes[G[0],G[1]]=cost+math.sqrt(2)
+            previous_node[G[0],G[1]]=(x,y)
+        
+    if H!=(x,y) and H not in visited_nodes.values() and H not in neighbours:
+        neighbours.append((H[0],H[1]))
+        if nodes[H[0],H[1]]>cost+math.sqrt(2):
+            nodes[H[0],H[1]]=cost+math.sqrt(2)
+            previous_node[H[0],H[1]]=(x,y)
+    return neighbours,nodes
+
+    
+    
 
 def dijkstra(xs,ys,xg,yg,Robot_Radius,Clearance_edge):
     # Robot Parameters
@@ -115,6 +178,4 @@ def dijkstra(xs,ys,xg,yg,Robot_Radius,Clearance_edge):
     neighbours=deque([(xs,ys)])
     previous_node={}
     n=1
-
-
 
