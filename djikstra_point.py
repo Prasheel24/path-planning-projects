@@ -281,6 +281,20 @@ def find_node(point, queue):
         else:
             return None 
 
+def make_path(node, goal):
+    print("Inside make path to Goal:")
+    p = list()
+    p.append(node.child_node)
+    parent = node.parent_node
+    if parent is None:
+        return p
+    while parent is not None:
+        p.append(parent.child_node)
+        parent = parent.parent_node
+    p_rev = list(reversed(p))
+    p_rev.append(goal)
+    return p_rev
+
 def djikstra_search(start, goal):
     """
     This is the main function that will loop over all locations
@@ -349,7 +363,7 @@ def djikstra_search(start, goal):
         frontier_node = pop_queue_element(current_heap) # current_heap.get()
         if frontier_node.child_node == goal:
             print("Success Dude")
-            return frontier_node, current_heap
+            return new_node.parent_node
 
         # visited_nodes.append(frontier_node.child_node)
         if frontier_node.child_node not in visited_nodes.values():
@@ -367,7 +381,7 @@ def djikstra_search(start, goal):
                     # print("Here")
                     if new_node_location == goal:
                         print("Success")
-                        return frontier_node, current_heap
+                        return new_node.parent_node
 
                     new_node = NodeInfo(new_node_location, running_cost)
 
@@ -408,7 +422,7 @@ def djikstra_search(start, goal):
 def main():
     tic = time.time()
     start_node = NodeInfo((10, 10), 0)
-    goal_node = (295, 195)
+    goal_node = (25, 15)
 
     if goal_node > (300, 200) or start_node.child_node > (300,200):
         print("Outside map of the robot. Please try again.")
@@ -422,7 +436,10 @@ def main():
         # main()
     else:
         # print("if")
-        djikstra_search(start_node, goal_node)
+        final_goal_parent = djikstra_search(start_node, goal_node)
+        if final_goal_parent is not None:
+            nodes_list = make_path(final_goal_parent, goal_node)
+            print(nodes_list)
 
     toc = time.time() # Compute time
     print("Time to compute is " + str((toc-tic)/60) + " mins")
