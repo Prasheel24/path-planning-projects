@@ -30,7 +30,7 @@ python Dijkstra_Rigid_Robot.py
 ```
 ## Output
 1.Dijkstra Rigid Robot
-<img src="Dijkstar_Rigid_Robot.png"/>
+<img src="Dijkstra_Rigid_Robot.PNG"/>
 ## Disclamer
 ```
 MIT License
@@ -56,6 +56,3 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
-
-
-
