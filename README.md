@@ -28,7 +28,9 @@ python Dijkstra_Point_Robot.py
 ```
 python Dijkstra_Rigid_Robot.py
 ```
-
+## Output
+1.Dijkstra Rigid Robot
+<img src="Dijkstar Rigid Robot.png"/>
 ## Disclamer
 ```
 MIT License
