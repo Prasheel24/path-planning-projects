@@ -30,7 +30,7 @@ python Dijkstra_Rigid_Robot.py
 ```
 ## Output
 1.Dijkstra Rigid Robot
-<img src="Dijkstar Rigid Robot.png"/>
+<img src="Dijkstar_Rigid_Robot.png"/>
 ## Disclamer
 ```
 MIT License
