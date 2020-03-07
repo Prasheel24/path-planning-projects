@@ -118,21 +118,6 @@ def draw_map():
     pygame.display.flip()
     return frame
 
-# def draw_map():
-#     pygame.init()
-#     size = (300*3, 200*3)
-#     frame = pygame.display.set_mode((300*3, 200*3))
-#     frame.fill([255,255,255])
-#     pygame.display.set_caption("Dijsktra Animation")
-#     frame.fill([255,255,255])
-#     pygame.draw.polygon(frame,[200,100,255],[convert(225,40),convert(250,25),convert(225,10),convert(200,25)])
-#     pygame.draw.polygon(frame,[200,100,255],[convert(25,185),convert(75,185),convert(100,150),convert(75,120),convert(50,150),convert(20,120)])
-#     pygame.draw.polygon(frame,[200,100,255],[convert(30,76),convert(100,39),convert(95,30),convert(25,68)])
-#     pygame.draw.circle(frame,[200,100,255],(225*3, (199-150)*3), 25*3)
-#     pygame.draw.ellipse(frame,[200,100,255],(110*3, (199-120)*3, 80*3, 40*3))
-#     pygame.display.flip()
-#     return frame
-
 def action_move_left(node):
     """
     This function is an action applied on a node to move left.
@@ -161,7 +146,7 @@ def action_move_right(node):
         Will return a new node location and cost
     """
     cost = 1
-    if node[0] < 300 and not inside_obstacle(node):
+    if node[0] < 299 and not inside_obstacle(node):
         return (node[0] + 1, node[1]), cost
     else:
         return None, None        
@@ -193,7 +178,7 @@ def action_move_down(node):
         Will return a new node location and cost
     """
     cost = 1
-    if node[1] < 200 and not inside_obstacle(node):
+    if node[1] < 199 and not inside_obstacle(node):
         return (node[0], node[1] + 1), cost
     else:
         return None, None
@@ -225,7 +210,7 @@ def action_move_up_right(node):
         Will return a new node location and cost
     """
     cost = 1.4
-    if node[0] < 300 and node[1] > 0 and not inside_obstacle(node):
+    if node[0] < 299 and node[1] > 0 and not inside_obstacle(node):
         return (node[0] + 1, node[1] - 1), cost
     else:
         return None, None
@@ -241,7 +226,7 @@ def action_move_down_left(node):
         Will return a new node location and cost
     """
     cost = 1.4
-    if node[0] > 0 and node[1] < 200 and not inside_obstacle(node):
+    if node[0] > 0 and node[1] < 199 and not inside_obstacle(node):
         return (node[0] - 1, node[1] + 1), cost
     else:
         return None, None
@@ -257,7 +242,7 @@ def action_move_down_right(node):
         Will return a new node location and cost
     """
     cost = 1.4
-    if node[0] < 300 and node[1] < 200 and not inside_obstacle(node):
+    if node[0] < 299 and node[1] < 199 and not inside_obstacle(node):
         return (node[0] + 1, node[1] + 1), cost
     else:
         return None, None
@@ -305,6 +290,7 @@ def my_pop_from_queue(node):
     """  
     min_a = 0
     for elem in range(len(node)):
+        pygame.event.get()
         if node[elem].cost < node[min_a].cost:
             min_a = elem
     return node.pop(min_a)
@@ -321,6 +307,7 @@ def find_node(point, node):
         Will return the index of the point in the node queue
     """  
     for elem in node:
+        pygame.event.get()
         if elem.child_node == point:
             return node.index(elem)
         else:
@@ -343,6 +330,7 @@ def make_path(node, goal):
     if parent is None:
         return p
     while parent is not None:
+        pygame.event.get()
         p.append(parent.child_node)
         parent = parent.parent_node
     p_rev = list((p))
@@ -385,6 +373,7 @@ def djikstra_search(start, goal):
     count = 1
     # loop on the current heap
     while current_heap: 
+        pygame.event.get()
         # Greedy search on minimum element
         frontier_node = my_pop_from_queue(current_heap)
         if frontier_node.child_node == goal:
@@ -392,17 +381,18 @@ def djikstra_search(start, goal):
             animate_exploration(start_x,start_y,goal[0],goal[1],frontier_node,visited_nodes,frame)
             return new_node.parent_node
 
-        if frontier_node.child_node not in visited_nodes.values():
+        if frontier_node.child_node not in visited_nodes.values(): # and not inside_obstacle(new_node_location):
             visited_nodes[i] = frontier_node.child_node
 
         if frontier_node is not None:
             # loop over all child nodes generated from action set
             for action in actions_set:
+                pygame.event.get()
                 new_node_location, running_cost = actions_move(action, frontier_node.child_node)
                 i += 1
                 if new_node_location is not None:
                     if new_node_location == goal:
-                        print("Success")
+                        print("Success!")
                         animate_exploration(start_x,start_y,goal[0],goal[1],frontier_node,visited_nodes,frame)
                         return new_node.parent_node
 
@@ -410,7 +400,7 @@ def djikstra_search(start, goal):
 
                     new_node.parent_node = frontier_node
                     # Check if visited, append new cost
-                    if new_node_location not in visited_nodes.values():
+                    if new_node_location not in visited_nodes.values() and not inside_obstacle(new_node_location):
                         new_node.cost = running_cost + new_node.parent_node.cost
                         if new_node_location not in visited_nodes.values():
                             visited_nodes[i] = new_node_location
@@ -464,6 +454,7 @@ def animate_exploration(xs,ys,goal_x,goal_y,frontier_node,visited_nodes,frame):
     for i in range(0,len(visited_nodes)):
         # print(i)
         pygame.event.get()
+        pygame.event.get()
         pygame.draw.rect(frame,[0,0,255],[(visited_nodes[i][0])*3,(199-visited_nodes[i][1])*3,0.8,0.8])
         pygame.time.wait(1)
         pygame.display.flip()
@@ -472,6 +463,7 @@ def animate_exploration(xs,ys,goal_x,goal_y,frontier_node,visited_nodes,frame):
     # Create the path
     count = 0
     while count < len(frontier_node):
+        pygame.event.get()
         pygame.event.get()
         pygame.draw.rect(frame,[255,0,0],[(goal_x)*3,(199-goal_y)*3,4,4])
         # print(frontier_node[count])
@@ -485,6 +477,7 @@ def animate_exploration(xs,ys,goal_x,goal_y,frontier_node,visited_nodes,frame):
     print("Press x on graph to exit code.")
     flag = True
     while flag:
+        pygame.event.get()
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 pygame.quit()
@@ -519,11 +512,18 @@ def main():
     elif start_node.child_node < (0, 0) or goal_node <= (0, 0):
         print("Outside the map of robot. Please try again.")
         main()
+    elif not inside_obstacle(start_node.child_node):
+        print("Start node inside obstacle. Please ry again.")
+        main()
+    elif not inside_obstacle(goal_node):
+        print("Goal node inside obstacle. Please try again.")
+        main()
     elif inside_obstacle(goal_node):
         print("Inside goal")
         print("Please try again.")
         main()
     else:
+        print("Starting exploration...")
         final_goal_parent = djikstra_search(start_node, goal_node)
         if final_goal_parent is not None:
             nodes_list = make_path(final_goal_parent, goal_node)
