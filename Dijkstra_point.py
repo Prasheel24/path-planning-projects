@@ -508,15 +508,19 @@ def main():
     goal_y = coordinate_points[3]
     start_node = NodeInfo((start_x, start_y), 0)
     goal_node = (goal_x, goal_y)
+    # print(start_x, start_y, goal_node[0], goal_node[1])
 
     if goal_node > (300, 200) or (start_x, start_y) > (300,200):
         print("Outside map of the robot. Please try again.")
         main()
-    elif (start_x, start_y) < (0, 0) or goal_node <= (0, 0):
-        print("Outside the map of robot. Please try again.")
-        main()
     elif inside_obstacle((start_x, start_y)):
         print("Start node inside obstacle. Please try again.")
+        main()
+    elif (start_x, start_y) < (0, 0) or goal_node < (0, 0):
+        print("Outside the map of robot. Please try again.")
+        main()    
+    elif start_x == goal_node[0] and start_y == goal_node[1]:
+        print("Start node is equal to goal node. Please try again.")
         main()
     elif inside_obstacle(goal_node):
         print("Inside goal")

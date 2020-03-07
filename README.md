@@ -3,6 +3,7 @@
 
 ## Authors
 Raj Prakash Shinde- 116852104
+
 Prasheel Renkuntla- 116925570
 
 ## Description
@@ -12,22 +13,25 @@ The project contains the implementation of a Dijkstra path planning algorithm fo
 1. Ubuntu 16.04 or Windows
 2. Python 3.7 and above
 3. pygame
+4. defaultdict
+5. deque
 ```
 pip install pygame
 ```
 
 ## Output Time
-Point Robot - 16 mins
-Rigid Robot - 12 mins
+Point Robot - 14 mins (Worst case:5 5 295 195)
+
+Rigid Robot - 14 mins (Worst case:5 5 295 195)
   
 ## Run
 1. To Run Dijkstra for point Robot
 ```
-python dijkstra_point.py
+python3.7 Dijkstra_point.py
 ```
 2. To Run Dijkstra for Rigid Robot
 ```
-python dijkstra_rigid.py
+python3.7 Dijkstra_rigid.py
 ```
 ## Output
 1. Dijkstra Point Robot
