@@ -23,11 +23,11 @@ Rigid Robot - 12 mins
 ## Run
 1. To Run Dijkstra for point Robot
 ```
-python Dijkstra_Point_Robot.py
+python dijkstra_point.py
 ```
 2. To Run Dijkstra for Rigid Robot
 ```
-python Dijkstra_Rigid_Robot.py
+python dijkstra_rigid.py
 ```
 ## Output
 1. Dijkstra Point Robot
