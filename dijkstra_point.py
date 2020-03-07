@@ -59,38 +59,79 @@ def inside_obstacle(node):
     """
     x = node[0]
     y = node[1]
+    # Rectangle bar half plane conditions
     if y<=(8/5)*x+28 and y<=(-37/70)*x+(643/7) and y>=(9/5)*x-141 and y>=(-19/35)*x+(571/7): return 1
-
+    # Ellipse half plane conditions
     if ((x-150)/(40))**2+((y-100)/(20))**2<=1: return 1
-    
+    # Non convex half plane conditions
     if y<=13*x-140 and y<=185 and y<=(-7/5)*x+290 and y>=(6/5)*x+30:
         if (y<=x+100 and y<=(-6/5)*x+210):
             f=0
         else:
             return 1
-    
+    # Rhombus half plane conditions
     if y<=(3/5)*x-95 and y>=(3/5)*x-125 and y<=(-3/5)*x+175 and y>=(-3/5)*x+145: return 1
-    
+    # Circle half plane conditions
     if (x-225)**2+(y-150)**2<=(25)**2: return 1
     return 0
 
-def convert(x, y):
-    return (x*3,(199-y)*3)
+def cart_to_image_convert(cart_x, cart_y):
+    """
+    This function is used to cart_to_image_convert cartesian to pygame coordinates
+
+    Args:
+    :x: x coordinates
+    :y: y coordinates
+
+    Returns:
+        Will return a tuple with coordinates.
+    """
+    return (cart_x * 3, (199 - cart_y) * 3)
 
 def draw_map():
+    """
+    This function is used to draw the basic map of the area
+
+    Args:
+    None
+
+    Returns:
+        Will return a frame with the map to be shown
+    """
     pygame.init()
-    size = (300*3, 200*3)
-    frame = pygame.display.set_mode((300*3, 200*3))
+    size = (300 * 3, 200 * 3) # Map size
+    frame = pygame.display.set_mode((300*3, 200*3)) # Scale it for better view
+    frame.fill([255,255,255]) # Background fill to white
+    pygame.display.set_caption("Dijsktra Animation") # Name for the frame
     frame.fill([255,255,255])
-    pygame.display.set_caption("Dijsktra Animation")
-    frame.fill([255,255,255])
-    pygame.draw.polygon(frame,[200,100,255],[convert(225,40),convert(250,25),convert(225,10),convert(200,25)])
-    pygame.draw.polygon(frame,[200,100,255],[convert(25,185),convert(75,185),convert(100,150),convert(75,120),convert(50,150),convert(20,120)])
-    pygame.draw.polygon(frame,[200,100,255],[convert(30,76),convert(100,39),convert(95,30),convert(25,68)])
+    # Draw the Rhombus shape
+    pygame.draw.polygon(frame,[200,100,255],[cart_to_image_convert(225,40),cart_to_image_convert(250,25),cart_to_image_convert(225,10),cart_to_image_convert(200,25)])
+    # Draw the non convex shape
+    pygame.draw.polygon(frame,[200,100,255],[cart_to_image_convert(25,185),cart_to_image_convert(75,185),cart_to_image_convert(100,150),cart_to_image_convert(75,120),cart_to_image_convert(50,150),cart_to_image_convert(20,120)])
+    # Draw the rectangular bar shape
+    pygame.draw.polygon(frame,[200,100,255],[cart_to_image_convert(30,76),cart_to_image_convert(100,39),cart_to_image_convert(95,30),cart_to_image_convert(25,68)])
+    # Draw the circle shape
     pygame.draw.circle(frame,[200,100,255],(225*3, (199-150)*3), 25*3)
+    # Draw the ellipse shape
     pygame.draw.ellipse(frame,[200,100,255],(110*3, (199-120)*3, 80*3, 40*3))
+    # Refresh the frame
     pygame.display.flip()
     return frame
+
+# def draw_map():
+#     pygame.init()
+#     size = (300*3, 200*3)
+#     frame = pygame.display.set_mode((300*3, 200*3))
+#     frame.fill([255,255,255])
+#     pygame.display.set_caption("Dijsktra Animation")
+#     frame.fill([255,255,255])
+#     pygame.draw.polygon(frame,[200,100,255],[convert(225,40),convert(250,25),convert(225,10),convert(200,25)])
+#     pygame.draw.polygon(frame,[200,100,255],[convert(25,185),convert(75,185),convert(100,150),convert(75,120),convert(50,150),convert(20,120)])
+#     pygame.draw.polygon(frame,[200,100,255],[convert(30,76),convert(100,39),convert(95,30),convert(25,68)])
+#     pygame.draw.circle(frame,[200,100,255],(225*3, (199-150)*3), 25*3)
+#     pygame.draw.ellipse(frame,[200,100,255],(110*3, (199-120)*3, 80*3, 40*3))
+#     pygame.display.flip()
+#     return frame
 
 def action_move_left(node):
     """
@@ -109,8 +150,6 @@ def action_move_left(node):
     else:
         return None, None
     
-    
-
 def action_move_right(node):
     """
     This function is an action applied on a node to move right
@@ -254,29 +293,49 @@ def actions_move(action_type,node):
     else:
         return None, None
 
-def pop_queue_element(queue):
-    min_a = 0
-    for elem in range(len(queue)):
-        if queue[elem].cost < queue[min_a].cost:
-            min_a = elem
-    return queue.pop(min_a)
+def my_pop_from_queue(node):
+    """
+    This is the function to use the list as a priority queue and get min cost
 
-def find_node(point, queue):
-    for elem in queue:
+    Args:
+    :node: Get the node instance
+
+    Returns:
+        Will return the queue node instance with less cost
+    """  
+    min_a = 0
+    for elem in range(len(node)):
+        if node[elem].cost < node[min_a].cost:
+            min_a = elem
+    return node.pop(min_a)
+
+def find_node(point, node):
+    """
+    This is the function to find the index of a node
+
+    Args:
+    :point: coordinates at which the node is present
+    :node: Get the node instance
+
+    Returns:
+        Will return the index of the point in the node queue
+    """  
+    for elem in node:
         if elem.child_node == point:
-            return queue.index(elem)
+            return node.index(elem)
         else:
             return None 
 
 def make_path(node, goal):
     """
-    This is the main function that will loop over all locations
+    This is the function to make path from start to goal
 
     Args:
-    node: location of a point on map
+    :node: location of a point on map
+    :goal: goal points x and y
 
     Returns:
-
+        WIll return a list with points from start to goal in optimal path
     """    
     p = list()
     p.append(node.child_node)
@@ -286,25 +345,30 @@ def make_path(node, goal):
     while parent is not None:
         p.append(parent.child_node)
         parent = parent.parent_node
-    p_rev = list(reversed(p))
+    p_rev = list((p))
     p_rev.append(goal)
     return p_rev
 
 def djikstra_search(start, goal):
     """
-    This is the main function that will loop over all locations
+    This is the Djikstra function that will loop over all locations
 
     Args:
-    node: location of a point on map
+    :start: initial location of a point robot on map
+    :goal: final locatio of a point robot on map
 
     Returns:
-
+        WIll return the final node that reaches the goal node
     """
     frame = draw_map()
     start_x = start.child_node[0]
     start_y = start.child_node[1]
-    x, y = convert(start_x, start_y)
-    gx, gy = convert(goal[0], goal[1])
+    # x, y = cart_to_image_convert(start_x, start_y)
+    # gx, gy = cart_to_image_convert(goal[0], goal[1])
+
+    # Get coordinates
+    x, y = cart_to_image_convert(start_x, start_y)
+    gx, gy = cart_to_image_convert(goal[0], goal[1])
 
     pygame.draw.rect(frame,[255,0,0],[x, y,4,4])
     pygame.draw.rect(frame,[0,255,0],[gx, gy ,4,4])
@@ -314,13 +378,15 @@ def djikstra_search(start, goal):
     
     actions_set = ['R', 'D', 'L', 'U', 'UL', 'UR', 'DL', 'DR']
     start = NodeInfo((start_x, start_y), 0)
-    current_heap = [start]
+    current_heap = [start] # Priority Queue with start node
 
     visited_nodes = defaultdict(list)
     i = 0
     count = 1
+    # loop on the current heap
     while current_heap: 
-        frontier_node = pop_queue_element(current_heap)
+        # Greedy search on minimum element
+        frontier_node = my_pop_from_queue(current_heap)
         if frontier_node.child_node == goal:
             print("Success Dude")
             animate_exploration(start_x,start_y,goal[0],goal[1],frontier_node,visited_nodes,frame)
@@ -330,6 +396,7 @@ def djikstra_search(start, goal):
             visited_nodes[i] = frontier_node.child_node
 
         if frontier_node is not None:
+            # loop over all child nodes generated from action set
             for action in actions_set:
                 new_node_location, running_cost = actions_move(action, frontier_node.child_node)
                 i += 1
@@ -342,13 +409,14 @@ def djikstra_search(start, goal):
                     new_node = NodeInfo(new_node_location, running_cost)
 
                     new_node.parent_node = frontier_node
-                    
+                    # Check if visited, append new cost
                     if new_node_location not in visited_nodes.values():
                         new_node.cost = running_cost + new_node.parent_node.cost
                         if new_node_location not in visited_nodes.values():
                             visited_nodes[i] = new_node_location
                         current_heap.append(new_node)
                     else:
+                        # Since visited, update previous cost
                         node_exist_index = find_node(new_node_location, current_heap)
                         if node_exist_index is not None:
                             temp_node = current_heap[node_exist_index]
@@ -357,44 +425,64 @@ def djikstra_search(start, goal):
                                 temp_node.parent = frontier
                 else:
                     continue
-        print(i)
+        # print(i)
     return None
 
-def animate_exploration(xs,ys,tempx,tempy,previous_node,visited_nodes,frame):
+def animate_exploration(xs,ys,goal_x,goal_y,frontier_node,visited_nodes,frame):
+    """
+    This is the animate function
+
+    Args:
+    :xs: start x coordinate
+    :ys: start y coordinate
+    :goal_x: goal x coordinate
+    :goal_y: goal y coordinate
+    :frontier_node: frontier node that reaches just before the goal
+    :visited_nodes: dictionary of all visited nodes
+    :frame: frame to be used in pygame
+
+    Returns:
+        WIll show the animation accordingly. To quit, user needs to use onscreen buttons
+    """
     p = list()
-    p.append(previous_node.child_node)
-    parent = previous_node.parent_node
+    p.append(frontier_node.child_node)
+    parent = frontier_node.parent_node
+    final_cost = frontier_node.cost
     if parent is None:
         return p
     while parent is not None:
         p.append(parent.child_node)
         parent = parent.parent_node
-    p_rev = list(reversed(p))
-    p_rev.append((tempx, tempy))
-    previous_node = p_rev
+    p_rev = list((p))
+    p_rev.append((goal_x, goal_y))
+    frontier_node = p_rev
     new_list = []
     for item in visited_nodes.values():
         new_list.append(item)
     visited_nodes = new_list
+    # Create the visualisation to start on visited nodes
     for i in range(0,len(visited_nodes)):
         # print(i)
         pygame.event.get()
         pygame.draw.rect(frame,[0,0,255],[(visited_nodes[i][0])*3,(199-visited_nodes[i][1])*3,0.8,0.8])
         pygame.time.wait(1)
         pygame.display.flip()
-    pygame.draw.rect(frame,[255,0,0],[(tempx)*3,(199-tempy)*3,4,4])
+    pygame.draw.rect(frame,[255,0,0],[(goal_x)*3,(199-goal_y)*3,4,4])
 
+    # Create the path
     count = 0
-    while count < len(previous_node):
+    while count < len(frontier_node):
         pygame.event.get()
-        pygame.draw.rect(frame,[255,0,0],[(tempx)*3,(199-tempy)*3,4,4])
-        # print(previous_node[count])
-        (tempx,tempy)=previous_node[count] #[tempx][tempy]
-        # pygame.time.wait(10)
+        pygame.draw.rect(frame,[255,0,0],[(goal_x)*3,(199-goal_y)*3,4,4])
+        # print(frontier_node[count])
+        (goal_x,goal_y)=frontier_node[count] #[goal_x][goal_y]
+        pygame.time.wait(10)
         pygame.display.flip()
         count += 1
-    pygame.draw.rect(frame,[255,0,0],[(tempx)*3,(199-tempy)*3,4,4])
+    pygame.draw.rect(frame,[255,0,0],[(goal_x)*3,(199-goal_y)*3,4,4])
     print("Done!")
+    print("The final cost to reach the goal is: " + str(final_cost))
+    print("Press x on graph to exit code.")
     flag = True
     while flag:
         for event in pygame.event.get():
@@ -404,6 +492,15 @@ def animate_exploration(xs,ys,tempx,tempy,previous_node,visited_nodes,frame):
     
 
 def main():
+    """
+    This is the main function
+
+    Args:
+    None
+
+    Returns:
+        Will complete the execution of the code
+    """
     tic = time.time()
     print("Enter the start and goal coordinates-")
     print("start_x, start_y, goal_x, goal_y: (eg: 5 5 140 14)")
@@ -430,6 +527,7 @@ def main():
         final_goal_parent = djikstra_search(start_node, goal_node)
         if final_goal_parent is not None:
             nodes_list = make_path(final_goal_parent, goal_node)
+            print("The list of coordinates to start position")
             print(nodes_list)
 
     toc = time.time() # Compute time
