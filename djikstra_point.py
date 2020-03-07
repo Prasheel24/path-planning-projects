@@ -1,4 +1,3 @@
-import numpy as np
 import sys
 # This try-catch is a workaround for Python3 when used with ROS; 
 # it is not needed for most platforms
@@ -8,10 +7,10 @@ except:
     pass
 
 import time
-import heapq as h
 from collections import defaultdict
-from queue import PriorityQueue, deque
 import math
+import pygame
+
 class NodeInfo:
     """
     A class to store index, cost and node information with parent child relations
@@ -31,7 +30,7 @@ class NodeInfo:
     -------
     None
     """
-    def __init__(self, child_node, cost):
+    def __init__(self, child_node, cost=math.inf):
         """
         Parameters
         ----------
@@ -45,7 +44,7 @@ class NodeInfo:
 
         self.parent_node = None
         self.child_node = child_node
-        self.cost = math.inf
+        self.cost = cost
 
 def inside_obstacle(node):
     """
@@ -74,6 +73,24 @@ def inside_obstacle(node):
     
     if (x-225)**2+(y-150)**2<=(25)**2: return 1
     return 0
+
+def convert(x, y):
+    return (x*3,(199-y)*3)
+
+def draw_map():
+    pygame.init()
+    size = (300*3, 200*3)
+    frame = pygame.display.set_mode((300*3, 200*3))
+    frame.fill([255,255,255])
+    pygame.display.set_caption("Dijsktra Animation")
+    frame.fill([255,255,255])
+    pygame.draw.polygon(frame,[200,100,255],[convert(225,40),convert(250,25),convert(225,10),convert(200,25)])
+    pygame.draw.polygon(frame,[200,100,255],[convert(25,185),convert(75,185),convert(100,150),convert(75,120),convert(50,150),convert(20,120)])
+    pygame.draw.polygon(frame,[200,100,255],[convert(30,76),convert(100,39),convert(95,30),convert(25,68)])
+    pygame.draw.circle(frame,[200,100,255],(225*3, (199-150)*3), 25*3)
+    pygame.draw.ellipse(frame,[200,100,255],(110*3, (199-120)*3, 80*3, 40*3))
+    pygame.display.flip()
+    return frame
 
 def action_move_left(node):
     """
@@ -206,36 +223,6 @@ def action_move_down_right(node):
     else:
         return None, None
 
-# def actions_move(action_type,node):
-#     """
-#     This function defines an action set and calls corresponding actions
-
-#     Args:
-#     action_type: string type variable that will give the action input
-#     node: list of elements that represent a node.
-
-#     Returns:
-#         Will return a new node location and cost
-#     """
-#     if action_type == "U":
-#         return action_move_up(node)
-#     if action_type == "D":
-#         return action_move_down(node)
-#     if action_type == "L":
-#         return action_move_left(node)
-#     if action_type == "R":
-#         return action_move_right(node)
-#     if action_type == "UL":
-#         return action_move_up_left(node)
-#     if action_type == "UR":
-#         return action_move_up_right(node)
-#     if action_type == "DL":
-#         return action_move_down_left(node)
-#     if action_type == "DR":
-#         return action_move_down_right(node)
-#     else:
-#         return None, None
-
 def actions_move(action_type,node):
     """
     This function defines an action set and calls corresponding actions
@@ -269,9 +256,9 @@ def actions_move(action_type,node):
 
 def pop_queue_element(queue):
     min_a = 0
-    for elemt in range(len(queue)):
-        if queue[elemt].cost < queue[min_a].cost:
-            min_a = elemt
+    for elem in range(len(queue)):
+        if queue[elem].cost < queue[min_a].cost:
+            min_a = elem
     return queue.pop(min_a)
 
 def find_node(point, queue):
@@ -282,7 +269,15 @@ def find_node(point, queue):
             return None 
 
 def make_path(node, goal):
-    print("Inside make path to Goal:")
+    """
+    This is the main function that will loop over all locations
+
+    Args:
+    node: location of a point on map
+
+    Returns:
+
+    """    
     p = list()
     p.append(node.child_node)
     parent = node.parent_node
@@ -305,105 +300,53 @@ def djikstra_search(start, goal):
     Returns:
 
     """
-    # goal_x = goal[0]
-    # goal_y = goal[1]
-
+    frame = draw_map()
     start_x = start.child_node[0]
     start_y = start.child_node[1]
-    start_cost = start.cost
-    start_node = (start_x, start_y)
+    x, y = convert(start_x, start_y)
+    gx, gy = convert(goal[0], goal[1])
 
-    actions_set = ['R', 'D', 'L', 'U', 'UL', 'UR', 'DL', 'DR']
-    # current_heap = PriorityQueue()
-    # current_heap = defaultdict(list)
-    # current_heap_cost = defaultdict(list)
-    # current_heap.update({0: (start_node)})
-    # current_heap_cost.update({0: start_cost})
+    pygame.draw.rect(frame,[255,0,0],[x, y,4,4])
+    pygame.draw.rect(frame,[0,255,0],[gx, gy ,4,4])
+    pygame.display.flip()
 
-
-    # current_heap.update({1: (9, 9)})
-    # current_heap_cost.update({0: 0})
-
-    # current_heap.update({2: (9,10)})
-    # current_heap_cost.update({0: 1})
-
-    # current_heap.update({3: (11, 11)})
-    # current_heap_cost.update({0: 2})
-
-    # current_heap.update({4: (4, 5)})
-    # current_heap_cost.update({0: 3})
-
+    start_cost = 0
     
-    # print([k for k,v in current_heap.items() if v == b][0])
-
-    # current_heap.put(start)
-    # current_heap = []
+    actions_set = ['R', 'D', 'L', 'U', 'UL', 'UR', 'DL', 'DR']
+    start = NodeInfo((start_x, start_y), 0)
     current_heap = [start]
 
-    # current_heap = deque([start])
-
-    # h.heapify(current_heap)
-    # h.heappush(current_heap, start)
-
     visited_nodes = defaultdict(list)
-    # visited_nodes = PriorityQueue()
-    # visited_nodes = list()
-    # visited_nodes = []
-    # h.heapify(visited_nodes)
-    # count = 0
-    # visited_nodes[0] = start
-    
-    #     key = min(current_heap, key=current_heap.get)    
-    #     print("Key is " + str(key))
-
     i = 0
     count = 1
     while current_heap: 
-        # print(type(pop_queue_element(current_heap).child_node))
-        frontier_node = pop_queue_element(current_heap) # current_heap.get()
+        frontier_node = pop_queue_element(current_heap)
         if frontier_node.child_node == goal:
             print("Success Dude")
+            animate_exploration(start_x,start_y,goal[0],goal[1],frontier_node,visited_nodes,frame)
             return new_node.parent_node
 
-        # visited_nodes.append(frontier_node.child_node)
         if frontier_node.child_node not in visited_nodes.values():
-            # visited_nodes.update({i : frontier_node.child_node})
             visited_nodes[i] = frontier_node.child_node
 
-        # h.heappush(visited_nodes, frontier_node.child_node)
         if frontier_node is not None:
             for action in actions_set:
                 new_node_location, running_cost = actions_move(action, frontier_node.child_node)
-                # print(i)
                 i += 1
-                # print(new_node_location)
                 if new_node_location is not None:
-                    # print("Here")
                     if new_node_location == goal:
                         print("Success")
+                        animate_exploration(start_x,start_y,goal[0],goal[1],frontier_node,visited_nodes,frame)
                         return new_node.parent_node
 
                     new_node = NodeInfo(new_node_location, running_cost)
 
                     new_node.parent_node = frontier_node
                     
-                    # print(new_node_location in next(iter(visited_nodes.values())))
-                    # new_node_location not in visited_nodes.values()
-                    if new_node_location not in visited_nodes.values(): #any(new_node_location in item for item in visited_nodes.queue): #new_node_location not in list(visited_nodes.values()):
-                        print(new_node_location)
-                        # print(new_node_location not in visited_nodes.values())
-                        # print(new_node_location in visited_nodes.values())
+                    if new_node_location not in visited_nodes.values():
                         new_node.cost = running_cost + new_node.parent_node.cost
-                        # visited_nodes.put(new_node_location) 
-                        # visited_nodes.append(new_node_location)
-                        # h.heappush(visited_nodes, new_node_location)
-                        # dup_list = [i for n, i in enumerate(visited_nodes) if i not in visited_nodes[n + 1:]]
                         if new_node_location not in visited_nodes.values():
-                            # visited_nodes.update({i : frontier_node.child_node})
                             visited_nodes[i] = new_node_location
-
-                        # visited_nodes.update({i : new_node_location})
-
                         current_heap.append(new_node)
                     else:
                         node_exist_index = find_node(new_node_location, current_heap)
@@ -415,27 +358,75 @@ def djikstra_search(start, goal):
                 else:
                     continue
         print(i)
-        # i +=1
     return None
 
+def animate_exploration(xs,ys,tempx,tempy,previous_node,visited_nodes,frame):
+    p = list()
+    p.append(previous_node.child_node)
+    parent = previous_node.parent_node
+    if parent is None:
+        return p
+    while parent is not None:
+        p.append(parent.child_node)
+        parent = parent.parent_node
+    p_rev = list(reversed(p))
+    p_rev.append((tempx, tempy))
+    previous_node = p_rev
+    new_list = []
+    for item in visited_nodes.values():
+        new_list.append(item)
+    visited_nodes = new_list
+    for i in range(0,len(visited_nodes)):
+        # print(i)
+        pygame.event.get()
+        pygame.draw.rect(frame,[0,0,255],[(visited_nodes[i][0])*3,(199-visited_nodes[i][1])*3,0.8,0.8])
+        pygame.time.wait(1)
+        pygame.display.flip()
+    pygame.draw.rect(frame,[255,0,0],[(tempx)*3,(199-tempy)*3,4,4])
+
+    count = 0
+    while count < len(previous_node):
+        pygame.event.get()
+        pygame.draw.rect(frame,[255,0,0],[(tempx)*3,(199-tempy)*3,4,4])
+        # print(previous_node[count])
+        (tempx,tempy)=previous_node[count] #[tempx][tempy]
+        # pygame.time.wait(10)
+        pygame.display.flip()
+        count += 1
+    pygame.draw.rect(frame,[255,0,0],[(tempx)*3,(199-tempy)*3,4,4])
+    print("Done!")
+    flag = True
+    while flag:
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                pygame.quit()
+                flag = False
+    
 
 def main():
     tic = time.time()
-    start_node = NodeInfo((10, 10), 0)
-    goal_node = (25, 15)
+    print("Enter the start and goal coordinates-")
+    print("start_x, start_y, goal_x, goal_y: (eg: 5 5 140 14)")
+    coordinate_points = [int(x) for x in input().split()]
+    # print(coordinate_points, coordinate_points[0], coordinate_points[1])
+    start_x = coordinate_points[0]
+    start_y = coordinate_points[1]
+    goal_x = coordinate_points[2]
+    goal_y = coordinate_points[3]
+    start_node = NodeInfo((start_x, start_y), 0)
+    goal_node = (goal_x, goal_y)
 
     if goal_node > (300, 200) or start_node.child_node > (300,200):
         print("Outside map of the robot. Please try again.")
-        # main()
+        main()
     elif start_node.child_node < (0, 0) or goal_node <= (0, 0):
         print("Outside the map of robot. Please try again.")
-        # main()
+        main()
     elif inside_obstacle(goal_node):
         print("Inside goal")
         print("Please try again.")
-        # main()
+        main()
     else:
-        # print("if")
         final_goal_parent = djikstra_search(start_node, goal_node)
         if final_goal_parent is not None:
             nodes_list = make_path(final_goal_parent, goal_node)
