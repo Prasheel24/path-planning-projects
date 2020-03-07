@@ -498,6 +498,9 @@ def main():
     print("Enter the start and goal coordinates-")
     print("start_x, start_y, goal_x, goal_y: (eg: 5 5 140 14)")
     coordinate_points = [int(x) for x in input().split()]
+    if len(coordinate_points) != 4:
+        print("Please input start(2) and goal(2) - 4 points: ")
+        main()
     # print(coordinate_points, coordinate_points[0], coordinate_points[1])
     start_x = coordinate_points[0]
     start_y = coordinate_points[1]
@@ -506,17 +509,14 @@ def main():
     start_node = NodeInfo((start_x, start_y), 0)
     goal_node = (goal_x, goal_y)
 
-    if goal_node > (300, 200) or start_node.child_node > (300,200):
+    if goal_node > (300, 200) or (start_x, start_y) > (300,200):
         print("Outside map of the robot. Please try again.")
         main()
-    elif start_node.child_node < (0, 0) or goal_node <= (0, 0):
+    elif (start_x, start_y) < (0, 0) or goal_node <= (0, 0):
         print("Outside the map of robot. Please try again.")
         main()
-    elif not inside_obstacle(start_node.child_node):
-        print("Start node inside obstacle. Please ry again.")
-        main()
-    elif not inside_obstacle(goal_node):
-        print("Goal node inside obstacle. Please try again.")
+    elif inside_obstacle((start_x, start_y)):
+        print("Start node inside obstacle. Please try again.")
         main()
     elif inside_obstacle(goal_node):
         print("Inside goal")

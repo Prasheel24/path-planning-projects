@@ -1,15 +1,17 @@
 import numpy as np
 import math
 import pygame
+import sys
 from collections import defaultdict,deque
 
 # Take Input form user for Robot parameters and start and goal points
 def take_input():
     print("Enter the Robot's Radius and Clearance (e.g 2 3) where 2 is Robot radius and 3 is clearance")
     R= [int(i) for i in input().split()]
+    if len(R) != 2: sys.exit()
     print("Enter Start followed by Goal co-ordinates x,y (e.g 5 4 230 270) where 5,4 are start points and 230,270 are goal points")
     C= [int(i) for i in input().split()]
-
+    if len(C) != 4 : sys.exit()
     # Check if inputs are valid
     if (C[0]==C[2] and C[1]==C[3]): return print("Start point and Goal Point are same, Run Again to Restart")
     if not (C[0]>=0 and C[1]>=0 and C[0]<300 and C[1]<200): return print("Start point is out of bounds, Run Again to Restart")
