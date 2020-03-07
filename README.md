@@ -1,4 +1,4 @@
-# Dijkstra Path Planner for Rigid and Point Robot
+# Dijkstra Path Planner for Point and Rigid Robot
 [![License MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/RajPShinde/Dijkstra-Path-Planner-for-Rigid-and-Point-Robot/blob/master/LICENSE)
 
 ## Authors
@@ -17,7 +17,8 @@ pip install pygame
 ```
 
 ## Output Time
-  18 mins
+Point Robot - 16 mins
+Rigid Robot - 12 mins
   
 ## Run
 1. To Run Dijkstra for point Robot
@@ -29,8 +30,12 @@ python Dijkstra_Point_Robot.py
 python Dijkstra_Rigid_Robot.py
 ```
 ## Output
-1.Dijkstra Rigid Robot
+1. Dijkstra Point Robot
+<img src="dijkstra_point.png"/>
+
+2. Dijkstra Rigid Robot
 <img src="Dijkstra_Rigid_Robot.PNG"/>
+
 ## Disclamer
 ```
 MIT License
